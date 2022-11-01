@@ -1,0 +1,13 @@
+.comment {
+    max-width: 560px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    background-color: white;
+    border-radius: 10px;
+    color: rgb(12, 12, 12);
+    margin-top: 10px;
+    overflow-x: hidden;
+}
+
