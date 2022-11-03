@@ -12,15 +12,21 @@ import useIsMibile from './hocks/useIsMobile';
 const YoutubeApp = () => {
     const [videos, setVideos] = useState(null);
     const [videoIfMobile, setVideoIfMobile] = useState(null);
+    const [videoDesktop, setVideoDesktop] = useState(null);
     const [activeVideoId, setActiveVideoId] = useState(null);
     const [comments, setComments] = useState([]);
 
     const isMobile = useIsMibile();
 
     useEffect(() => {
+        isMobile ? setVideos(videoIfMobile) : setVideos(videoDesktop);
+    }, [isMobile]);
+
+    useEffect(() => {
         const videos = JSON.parse(localStorage.getItem('videos'));
         const activeVideoId = JSON.parse(localStorage.getItem('activeVideoId'));
         const videoIfMobile = JSON.parse(localStorage.getItem('videoIfMobile'));
+        const videoDesktop = JSON.parse(localStorage.getItem('videoDesktop'));
         if (videos) {
             setVideos(videos);
         }
@@ -30,6 +36,10 @@ const YoutubeApp = () => {
 
         if (videoIfMobile) {
             setVideoIfMobile(videoIfMobile);
+        }
+
+        if (videoDesktop) {
+            setVideoDesktop(videoDesktop);
         }
     }, []);
 
@@ -43,10 +53,14 @@ const YoutubeApp = () => {
                     const videos = response.data;
                     const firstVideo = videos.items[0].id.videoId;
                     const videoIfMobile = JSON.parse(JSON.stringify(videos));
+                    const videoDesktop = JSON.parse(JSON.stringify(videos));
+                    videoIfMobile.items.splice(3);
 
+                    setVideoDesktop(videoDesktop);
                     setVideos(videos);
                     setActiveVideoId(firstVideo);
-                    setVideoIfMobile(videoIfMobile.items.splice(3));
+                    setVideoIfMobile(videoIfMobile);
+
                     console.log(videoIfMobile);
                     console.log(videos);
                     localStorage.setItem('videos', JSON.stringify(videos));
@@ -57,6 +71,11 @@ const YoutubeApp = () => {
                     localStorage.setItem(
                         'videoIfMobile',
                         JSON.stringify(videoIfMobile)
+                    );
+
+                    localStorage.setItem(
+                        'videoDesktop',
+                        JSON.stringify(videoDesktop)
                     );
                 });
         } else {
@@ -88,10 +107,7 @@ const YoutubeApp = () => {
                     {comments && <CommentsList comments={comments} />}
                     <CommentsAdd onSubmit={commentsAdd} />
 
-                    <PreviewList
-                        videos={isMobile ? videoIfMobile : videos}
-                        onClick={selectVideo}
-                    />
+                    <PreviewList videos={videos} onClick={selectVideo} />
                     <button
                         className={styles.ressetLocal}
                         onClick={resetLocalStorage}
